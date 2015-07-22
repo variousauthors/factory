@@ -1,0 +1,399 @@
+title My Game
+author Stephen Lavelle
+homepage www.puzzlescript.net
+realtime_interval 0.5
+
+========
+OBJECTS
+========
+
+RBelt
+darkgrey grey
+01000
+00100
+00010
+00100
+01000
+
+LBelt
+darkgrey grey
+00010
+00100
+01000
+00100
+00010
+
+DBelt
+darkgrey grey
+00000
+10001
+01010
+00100
+00000
+
+UBelt
+darkgrey grey
+00000
+00100
+01010
+10001
+00000
+
+( blue rotators )
+
+LBlueRotator
+darkgrey blue
+00010
+00100
+01000
+00100
+00010
+
+RBlueRotator
+darkgrey blue
+01000
+00100
+00010
+00100
+01000
+
+UBlueRotator
+darkgrey blue
+00000
+00100
+01010
+10001
+00000
+
+DBlueRotator
+darkgrey blue
+00000
+10001
+01010
+00100
+00000
+
+( red rotators )
+
+LRedRotator
+darkgrey red
+00010
+00100
+01000
+00100
+00010
+
+RRedRotator
+darkgrey red
+01000
+00100
+00010
+00100
+01000
+
+URedRotator
+darkgrey red
+00000
+00100
+01010
+10001
+00000
+
+DRedRotator
+darkgrey red
+00000
+10001
+01010
+00100
+00000
+
+( green rotators )
+
+LGreenRotator
+darkgrey green
+00010
+00100
+01000
+00100
+00010
+
+RGreenRotator
+darkgrey green
+01000
+00100
+00010
+00100
+01000
+
+UGreenRotator
+darkgrey green
+00000
+00100
+01010
+10001
+00000
+
+DGreenRotator
+darkgrey green
+00000
+10001
+01010
+00100
+00000
+
+( switches )
+
+BeltPowerOn
+Brown Green grey darkgrey
+00000
+02220
+02320
+01110
+00000
+
+BeltPowerOff
+Brown Red grey darkgrey
+00000
+01110
+02320
+02220
+00000
+
+BlueSwitchUp
+BROWN BLUE GREY
+00000
+00100
+00200
+00000
+00000
+
+BlueSwitchDown
+BROWN BLUE GREY
+00000
+00200
+00100
+00000
+00000
+
+RedSwitchUp
+BROWN Red GREY
+00000
+00100
+00200
+00000
+00000
+
+RedSwitchDown
+BROWN Red GREY
+00000
+00200
+00100
+00000
+00000
+
+GreenSwitchUp
+BROWN GREEN GREY
+00000
+00100
+00200
+00000
+00000
+
+GreenSwitchDown
+BROWN GREEN GREY
+00000
+00200
+00100
+00000
+00000
+
+( utilities )
+
+( power is used so that there is always one tic between turning
+ the power on, and having the converyor belt actually move )
+PowerOn
+transparent
+
+PowerOff
+transparent
+
+Background 
+GREEN  
+
+Target 
+DarkBlue    
+
+Wall 
+BROWN
+
+Player 
+Blue   
+
+Crate 
+Orange 
+
+=======
+LEGEND
+=======
+
+(basic belt)
+
+8 = UBelt
+6 = RBelt
+2 = DBelt
+4 = LBelt
+
+Belt = 8 or 6 or 4 or 2
+
+( rotators )
+( red, green, blue in that order on the keyboard )
+( the switches z, x, and c mirror this order )
+
+w = URedRotator
+a = LRedRotator
+s = DRedRotator
+d = RRedRotator
+
+t = UGreenRotator
+f = LGreenRotator
+g = DGreenRotator
+h = RGreenRotator
+
+i = UBlueRotator
+k = DBlueRotator
+j = LBlueRotator
+l = RBlueRotator
+
+( aggregates for converying )
+RRotator = RBlueRotator or RRedRotator or RGreenRotator
+DRotator = DBlueRotator or DRedRotator or DGreenRotator
+LRotator = LBlueRotator or LRedRotator or LGreenRotator
+URotator = UBlueRotator or URedRotator or UGreenRotator
+
+( agregates for power/rotation )
+
+RedRotator = w or a or s or d
+GreenRotator = t or f or g or h
+BlueRotator = i or j or k or l
+
+Rotator = BlueRotator or RedRotator or GreenRotator
+
+( belts for moving crates )
+
+RightBelt = RBelt or RRotator
+DownBelt = DBelt or DRotator
+LeftBelt = LBelt or LRotator
+UpBelt = UBelt or URotator
+
+( aggregate to obstruct player )
+
+ConvayorBelt = Belt or Rotator
+
+( switches )
+
+Z = RedSwitchUp
+X = GreenSwitchUp
+C = BlueSwitchUp
++ = BeltPowerOff and PowerOff
+
+RedSwitch = Z or RedSwitchDown
+GreenSwitch = X or GreenSwitchDown
+BlueSwitch = C or BlueSwitchDown
+
+BeltPower = BeltPowerOn or BeltPowerOff
+Switch = RedSwitch or GreenSwitch or BlueSwitch or BeltPower
+Power = PowerOn or PowerOff
+
+. = Background
+# = Wall
+口 = Crate
+P = Player
+@ = Crate and Target
+O = Target
+
+=======
+SOUNDS
+=======
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target, ConvayorBelt
+Player, Wall, Crate, Switch
+Power
+
+======
+RULES     
+======     
+( danger: do not walk on the belt!)
+[ > Player | ConvayorBelt ] -> [ Player | ConvayorBelt ]
+
+( player can push the crate )
+[ > Player | Crate ] -> [ > Player | > Crate ]
+
+( Player can toggle switches )
+[ action Player | BeltPowerOn ] -> [ Player | BeltPowerOff ]
+[ action Player | BeltPowerOff ] -> [ Player | BeltPowerOn ]
+
+[ action Player | RedSwitchUp ] -> [ Player | action RedSwitchDown ]
+[ action Player | GreenSwitchUp ] -> [ Player | action GreenSwitchDown ]
+[ action Player | BlueSwitchUp ] -> [ Player | action BlueSwitchDown ]
+
+[ action Player | RedSwitchDown ] -> [ Player | action RedSwitchUp ]
+[ action Player | GreenSwitchDown ] -> [ Player | action GreenSwitchUp ]
+[ action Player | BlueSwitchDown ] -> [ Player | action BlueSwitchUp ]
+
+[ action RedSwitch ] [ RedRotator ] -> [ action RedSwitch ] [ action RedRotator ]
+[ action GreenSwitch ] [ GreenRotator ] -> [ action GreenSwitch ] [ action GreenRotator ]
+[ action BlueSwitch ] [ BlueRotator ] -> [ action BlueSwitch ] [ action BlueRotator ]
+
+( rotators are rotated )
+[ action URedRotator ] -> [RRedRotator]
+[ action RRedRotator ] -> [DRedRotator]
+[ action DRedRotator ] -> [LRedRotator]
+[ action LRedRotator ] -> [URedRotator]
+
+( rotators are rotated )
+[ action UGreenRotator ] -> [RGreenRotator]
+[ action RGreenRotator ] -> [DGreenRotator]
+[ action DGreenRotator ] -> [LGreenRotator]
+[ action LGreenRotator ] -> [UGreenRotator]
+
+( rotators are rotated )
+[ action UBlueRotator ] -> [RBlueRotator]
+[ action RBlueRotator ] -> [DBlueRotator]
+[ action DBlueRotator ] -> [LBlueRotator]
+[ action LBlueRotator ] -> [UBlueRotator]
+
+( if the power is on, the crate will be convayed )
+
+( throttle: if the switch is switched, power goes on in the next tic )
+late [ BeltPowerOn ] [ PowerOff ] -> [ BeltPowerOn ] [ PowerOn ]
+late [ BeltPowerOff ] [ PowerOn ] -> [ BeltPowerOff ] [ PowerOff ]
+
+[ stationary Player ] [ PowerOn ] [ stationary Crate RightBelt ] -> [ stationary Player ] [ PowerOn ] [ v Crate RightBelt ]
+[ stationary Player ] [ PowerOn ] [ stationary Crate LeftBelt ] -> [ stationary Player ] [ PowerOn ] [ ^ Crate LeftBelt ]
+[ stationary Player ] [ PowerOn ] [ stationary Crate DownBelt ] -> [ stationary Player ] [ PowerOn ] [ < Crate DownBelt ]
+[ stationary Player ] [ PowerOn ] [ stationary Crate UpBelt ] -> [ stationary Player ] [ PowerOn ] [ > Crate UpBelt ]
+
+
+==============
+WINCONDITIONS
+==============
+
+
+
+=======     
+LEVELS
+=======
+
+....+zxc..
+..........
+.P口6d2....
+...i.s....
+...8f4....
+..........
+..........
+
